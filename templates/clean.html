@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block body_block %}
+<script src="http://d3js.org/d3.v3.min.js"></script>
+    <div id="main">
+        <div class="header">
+            <h1>Interactive Cleaning</h1>
+        </div>
+
+        <div class="content">
+            <div class="clean1">
+                
+                <br/>
+                <center>
+                    <button class="pure-button pure-button-primary button-error" onclick="$('.clean1').hide();$('.clean2').show();">More Data</button>
+                <a class="pure-button pure-button-primary" href="http://automation.berkeley.edu/activecleandemo/?cleaning=manual">Done</a>
+                </center>
+                <br/>
+
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                {% for o in s1 %}
+                    <tr><td><textarea style="width: 600px !important; height: 200px !important;">{{ o.0.0.0 |  safe}}</textarea> 
+
+
+                        <select style="position:relative; top: -100px; font-size: 18px !important;">
+  <option value="1">{{o.1.0}}</option>
+  <option value="0">{{o.1.1}}</option>
+  <option value="-1">Remove</option>
+</select>
+
+</td></tr>
+                {% endfor %}
+                </table>
+            
+            </div>
+
+
+        <div class="clean2" style="display: none;">
+                
+                <br/>
+                <center>
+                    <button class="pure-button pure-button-primary button-error"  onclick="$('.clean2').hide();$('.clean3').show();">More Data</button>
+                <a class="pure-button pure-button-primary" href="http://localhost:8000/analyzeCustom/?cleaning=manual">Done</a>
+                </center>
+                <br/>
+
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                {% for o in s2 %}
+                    <tr><td><textarea style="width: 600px !important; height: 200px !important;">{{ o.0.0.0 |  safe}}</textarea> 
+
+
+                        <select style="position:relative; top: -100px; font-size: 18px !important;">
+  <option value="1">{{o.1.0}}</option>
+  <option value="0">{{o.1.1}}</option>
+  <option value="-1">Remove</option>
+</select>
+
+</td></tr>
+                {% endfor %}
+                </table>
+            
+            </div>
+
+
+
+        <div class="clean3"  style="display: none;">
+                
+                <br/>
+                <center>
+                    <button class="pure-button pure-button-primary button-error">More Data</button>
+                <a class="pure-button pure-button-primary" href="/?cleaning=manual">Done</a>
+                </center>
+                <br/>
+
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                {% for o in s3 %}
+                    <tr><td><textarea style="width: 600px !important; height: 200px !important;">{{ o.0.0.0 |  safe}}</textarea> 
+
+
+                        <select style="position:relative; top: -100px; font-size: 18px !important;">
+  <option value="1">{{o.1.0}}</option>
+  <option value="0">{{o.1.1}}</option>
+  <option value="-1">Remove</option>
+</select>
+
+</td></tr>
+                {% endfor %}
+                </table>
+            
+            </div>
+
+        </div>
+
+    </div>
+
+<script src="{% static "js/dashboard.js" %}"></script>
+
+{% endblock %}
+

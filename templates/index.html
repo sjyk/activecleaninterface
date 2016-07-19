@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block body_block %}
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+window.anim_started = false;
+</script>
+
+    <div id="main">
+        <div class="header">
+            <h1>ActiveClean Demo</h1>
+        </div>
+
+        <div class="content">
+
+          <div class="introduction">
+            <h2>Introduction</h2>
+            IMDB has a dataset of 900,000 <strong>dirty</strong> movie plot description tagged with genres. Train a classifier to predict whether a movie is a "Comedy" or "Horror" movie from the plot description.<p/>
+
+            <h4>Example of Dirty Data:</h4>
+          <table class="pure-table pure-table-striped" style="font-size: 12px !important;">
+                <th><td width="30%">Plot</td><td width="20%">Rating</td><td width="20%">Genre</td></th>
+
+                <tr><td width="30%">Bloodrage (1979)</td>
+                 <td>A psychotic killer stalks the streets of New York City, preying on beautiful girls who live alone.....</td>
+                <td>Unrated</td>
+                <td style="background-color:#ffb3b3;"><strong>Comedy</strong></td>
+             </tr>
+            </table>
+
+            <br/>
+             <button class="pure-button pure-button-primary button-error" onclick="$('.introduction').hide();$('.examples').fadeIn();">Get Started!</button>
+          </div>
+
+          <div class="examples" style="display:none;">
+            <h2>Data Error Affects Accuracy</h2>
+            Dirty records affect the accuracy of Machine Learning models.
+
+            <div class="saved-pipelines">
+
+                <center><h3>No Data Cleaning: Very Inaccurate</h3></center>
+
+                <div class="pipeline pipelineh"><br/>Data</div>
+                <img src="https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/512/arrow.png" width="40px" style="float: left;padding-top:50px;"/>
+                <div class="pipeline pipelineh">Featurize (TFIDF)</div>
+                <img src="https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/512/arrow.png" width="40px" style="float: left;padding-top:50px;"/>
+                <div class="pipeline pipelineh">Classifier (SVM)</div>
+
+                <div class="nc-accuracy" style="display:none;">
+                <img src="https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/512/arrow.png" width="40px" style="float: left;padding-top:50px;"/>
+                <span style="float: left;padding-top:50px; margin: 8px;font-size: 24px;color: #ff0000;">Accuracy: {{naive_accuracy}}</span>
+                </div>
+
+                <div style="clear:both;"></div>
+
+                <div style="padding:10px;"><button class="pure-button pure-button-primary button-error" style="background-color:  #9966ff!important;" onclick="$('.nc-accuracy').fadeIn(1000); $('.inspect-nc-btn').fadeIn(1000);$('.clean-nc-btn').fadeIn(1500);">&#9654;&nbsp;Run</button>
+                <a class="pure-button pure-button-primary inspect-nc-btn" style="font-size: 14px; display: none;" href="activecleandemo/analyze/?cleaning=naive" target="_blank">&#9906;&nbsp;Inspect</a>
+                <a class="pure-button pure-button-primary clean-nc-btn" style="background-color: #ff5050!important;display: none;" href="http://automation.berkeley.edu/activecleandemo/clean/" target="_blank">Clean</a>
+
+
+            </div>
+
+          </div>
+
+          <br/><br/>
+
+          <button class="pure-button pure-button-primary button-error" onclick="$('.examples').hide();$('.cleaning').fadeIn();">Next</button>
+
+        </div>
+
+          <div class="cleaning" style="display: none; width: 700px;">
+            <h2>Getting Your Money's Worth</h2>
+            
+            Data cleaning is expensive and time-consuming. Suppose you have a budget of (<strong>k</strong>) records, what is the best way to train the model?
+
+           
+           <br/>
+
+            <button class="pure-button pure-button-primary button-error" style="background-color:  #9966ff!important;" onclick="window.anim_started = true;">&#9654;&nbsp;Run</button>
+
+                <ul>
+                    <li><span style="background-color: steelblue;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;Combining dirty and clean data (<a href="#" onclick="$('.ri').fadeIn();">see</a>)  
+
+                    <br/>
+                    <img class="ri" src="http://automation.berkeley.edu/activecleandemo/static/rtr.png"  width="250px" style="display: none;"/>
+                    </li>
+                    <li><span style="background-color: black;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;Using only the clean data (<a href="#" onclick="$('.sci').fadeIn();">see</a>)
+
+                    <br/>
+                    <img class="sci" src="http://automation.berkeley.edu/activecleandemo/static/sc.png"  width="240px" style="display: none;"/>
+
+                    </li>
+                    <li><span style="background-color: magenta;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;ActiveClean: Iterative Update (<a href="#" onclick="$('.aci').fadeIn();">see</a>)
+
+                    <br/>
+                    <img class="aci" src="http://automation.berkeley.edu/activecleandemo/static/ac.png" width="300px" style="display: none;"/>
+
+                    </li>
+                </ul>
+
+                <p>
+
+    <span style="position: relative; top: 190px; left: -150px;">Test Error </span>
+    <span style="position: relative; top: 70px; left: -120px;">50%</span>
+    <span style="position: relative; top: 120px; left: -160px;">40%</span>
+    <span style="position: relative; top: 170px; left: -195px;">30%</span>
+    <span style="position: relative; top: 220px; left: -230px;">20%</span>
+    <span style="position: relative; top: 270px; left: -270px;">10%</span>
+    <!--<span style="position: relative; top: 100px; left: -80px;">50%</span>-->
+
+    <div id="graph1" class="aGraph" style="width:600px; height:300px;"></div>
+    <div id="graph2" class="aGraph" style="width:600px; height:300px; position: relative; top: -300px;"></div>
+    <div id="graph3" class="aGraph" style="width:600px; height:300px; position: relative; top: -600px;"></div>
+    <span style="position: relative; top: -600px; left: -20px;">1000 &nbsp; &nbsp; &nbsp;  2000 &nbsp; &nbsp; &nbsp; 3000 &nbsp; &nbsp; &nbsp; 4000 &nbsp; &nbsp; &nbsp; 5000 &nbsp; &nbsp; &nbsp; 6000 &nbsp; &nbsp; &nbsp;  7000 &nbsp; &nbsp; &nbsp; 8000 &nbsp; &nbsp; &nbsp; 9000 &nbsp; &nbsp; &nbsp; 10000</span>
+    <center><span style="position: relative; top: -600px; left: -30px;">Records Cleaned</span></center>
+
+    </p>
+    
+    <script>
+    
+    function displayGraphExample(id, width, height, interpolation, animate, updateDelay, transitionDelay, plotToChose) {
+        // create an SVG element inside the #graph div that fills 100% of the div
+        var graph = d3.select(id).append("svg:svg").attr("width", "100%").attr("height", "100%");
+
+        // create a simple data array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
+	var datar = {{res_r| safe}};
+	var dataac = {{res_ac | safe}};
+	var datas = {{res_sc | safe}};
+
+        var data = [];
+
+        // X scale will fit values from 0-10 within pixels 0-100
+        var x = d3.scale.linear().domain([0, 100]).range([5, width]); // starting point is -5 so the first value doesn't show and slides off the edge as part of the transition
+        // Y scale will fit values from 0-10 within pixels 0-100
+        var y = d3.scale.linear().domain([0.5, 1.0]).range([0, height]);
+
+        // create a line object that represents the SVN line we're creating
+        var line = d3.svg.line()
+            // assign the X function to plot our line as we wish
+            .x(function(d,i) { 
+                // verbose logging to show what's actually being done
+                //console.log('Plotting X value for data point: ' + d + ' using index: ' + i + ' to be at: ' + x(i) + ' using our xScale.');
+                // return the X coordinate where we want to plot this datapoint
+                return x(i); 
+            })
+            .y(function(d) { 
+                // verbose logging to show what's actually being done
+                //console.log('Plotting Y value for data point: ' + d + ' to be at: ' + y(d) + " using our yScale.");
+                // return the Y coordinate where we want to plot this datapoint
+                return y(d); 
+            })
+            .interpolate(interpolation)
+    
+            // display the line by appending an svg:path element with the data line we created above
+            if (plotToChose == "r")
+                graph.append("svg:path").attr("d", line(data)).attr("stroke", "black");
+            else if (plotToChose == "s")
+                graph.append("svg:path").attr("d", line(data)).attr("stroke", "steelblue");
+            else if (plotToChose == "ac")
+                graph.append("svg:path").attr("d", line(data)).attr("stroke", "magenta");
+            // or it can be done like this
+            //graph.selectAll("path").data([data]).enter().append("svg:path").attr("d", line);
+            
+            
+            function redrawWithAnimation() {
+                // update with animation
+                //console.log(data)
+                graph.selectAll("path")
+                    .data([data]) // set the new data
+                    .attr("transform", "translate(" + -x(1) + ")") // set the transform to the right by x(1) pixels (6 for the scale we've set) to hide the new value
+                    .attr("d", line) // apply the new data values ... but the new value is hidden at this point off the right of the canvas
+                    .transition() // start a transition to bring the new value into view
+                    .ease("linear")
+                    .duration(transitionDelay) // for this demo we want a continual slide so set this to the same as the setInterval amount below
+                    //.attr("transform", "translate(" + -x(0) + ")"); // animate a slide to the left back to x(0) pixels to reveal the new value
+                    
+                    /* thanks to 'barrym' for examples of transform: https://gist.github.com/1137131 */
+            }
+            
+            function redrawWithoutAnimation() {
+                // static update without animation
+                graph.selectAll("path")
+                    .data([data]) // set the new data
+                    .attr("d", line); // apply the new data values
+            }
+            
+            setInterval(function() {
+               
+               if(window.anim_started){
+               d = datar
+               if (plotToChose == 'ac')
+                 d = dataac;
+                else if (plotToChose == 's')
+                    d = datas;
+
+               if (d.length > 0){
+               var v = d.shift(); // remove the first element of the array
+               data.push(v);
+               console.log(data) // add a new element to the array (we're just taking the number we just shifted off the front and appending to the end)
+               if(animate) {
+                   redrawWithAnimation();
+               } else {
+                   redrawWithoutAnimation();
+               }
+            }
+           }
+            }, updateDelay);
+        }
+        
+        displayGraphExample("#graph1", 600, 300, "basis", true, 500, 500, 'r');
+        displayGraphExample("#graph2", 600, 300, "basis", true, 500, 500, 'ac');
+        displayGraphExample("#graph3", 600, 300, "basis", true, 500, 500, 's');
+        //displayGraphExample("#graph1", 1000, 35, "basis", true, 1000, 1000);
+        //displayGraphExample("#graph3", 150, 15, "linear", true, 1000, 1000);
+        //displayGraphExample("#graph4", 150, 15, "linear", false, 1000, 1000);       
+        //displayGraphExample("#graph5", 300, 30, "basis", true, 1500, 750);  
+        //displayGraphExample("#graph6", 300, 30, "basis", false, 1500, 750);     
+    </script>
+
+    <button class="pure-button pure-button-primary button-error" style="position: relative; top: -600px;display:none;" onclick="$('.cleaning').hide();$('.details').fadeIn();">Next</button>
+
+    </div>
+
+        <iframe name="hiddenFrame" class="hide"></iframe>
+
+    <div class="details" style="display: none; width: 100%;">
+
+        <h2>Now It's Your Turn</h2>
+        Write an interactive data cleaning program using the ActiveClean library.
+
+        <form class="pure-form" style="width: 1400px;" action="http://automation.berkeley.edu/activecleandemo/exec/" method="post" target="hiddenFrame">
+
+        <textarea name="codeblock" class="pure-input-1-2" style="height: 800px;">#init pipeline
+activeclean = ActiveClean()
+
+#load the data
+data = lineLoader("data/ydata-ymovies-movie-content-descr-v1_0.txt", activeclean)
+
+#get labeled dataset
+labeledData = extractLabel(data, splitOnDelim(delim='\t', index=10), activeclean)
+
+#get labeled dataset
+numericalLabels = translateLabelToCategories(labeledData, ["Comedy", "Horror"], activeclean)
+
+#get data types
+types = getDataTypes(numericalLabels)
+
+#features
+features = convertToFeatures(numericalLabels, types, activeclean)
+
+#learn
+clf = activeclean.learn(loss="modified_huber")
+
+"""
+#add a new column "rating"
+extractNewColDelim(activeclean, index=5)
+activeclean.updateModel()
+"""
+
+"""
+#apply entity resolution
+entityResolution(1, {'similiarity':'edit', 'thresh': 0.6}, activeclean)
+activeclean.updateModel()
+"""
+        </textarea>
+
+    <button type="submit" class="pure-button pure-input-1-2 pure-button-primary" onclick="$('.cus-view-btn').fadeIn(1000);">&#9654;&nbsp;Run</button>
+
+    <br/>
+
+    <a class="pure-button pure-button-primary cus-view-btn" style="display: none; margin: 10px;" href="http://automation.berkeley.edu/activecleandemo/analyzeCustom/" target="_blank">&#9906;&nbsp;Inspect</a>
+
+</form>
+
+           
+    </div>
+
+
+
+    </div>
+
+
+
+
+{% endblock %}
+

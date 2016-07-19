@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block body_block %}
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<div class="content">
+   <div class="pipeline-div" style="display: table-row;">
+
+            <h2>Learning Pipeline</h2>
+            {% for o in keyset %}
+                    <div class="pipeline pipeline-{{o.1}}" onclick="showPanels('{{ o.1 |  safe}}');"><br/>{{ o.0 |  safe}}  </div>
+                    <img src="https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/512/arrow.png" width="40px" style="float: left;padding-top:50px;"/>
+            {% endfor %}
+
+            <div class="manual-clean" style="{{hideman}}">
+            <div class="pipelinem" onclick="showPanels('accuracy');">Manual Cleaning</div>
+            <img src="https://cdn2.iconfinder.com/data/icons/windows-8-metro-style/512/arrow.png" width="40px" style="float: left;padding-top:50px;"/>
+            </div>
+
+            <div class="pipeline pipeline-accuracy" onclick="showPanels('accuracy');">Accuracy:<br/>{{ accuracy |  safe}}</div>
+            </div>
+
+            <center><br/><a class="pure-button pure-button-primary clean-cus-btn" style="background-color: #ff5050!important; width: 60%;" href="http://localhost:8000/clean/?custom=cus" target="_blank">Manual Clean</a></center>
+            
+            <div class="load" style="display: none">
+                
+                <h2>example1.py: Line 11</h2>
+                
+                <div style="font-family: courier;">
+                lineLoader("data/ydata-ymovies-movie-content-descr-v1_0.txt", activeclean)
+                <br/><br/>
+                </div>
+
+                <h2>Output: List[String]</h2>
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                {% for o in load %}
+                    <tr><td>{{ o |  safe}}</td></tr>
+                {% endfor %}
+                </table>
+            
+            </div>
+
+            <div class="label" style="display: none">
+                
+                <h2>example1.py: Line 14</h2>
+                
+                <div style="font-family: courier;">
+                extractLabel(data, splitOnDelim(delim='\t', index=10), activeclean)
+                <br/><br/>
+                </div>
+
+                <h2>Output: List[(String, String)]</h2>
+
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                {% for o in label %}
+                    <tr><td width="80%">{{ o.0 |  safe}}</td><td width="20%">{{ o.1 |  safe}}</td></tr>
+                {% endfor %}
+                </table>
+            
+            </div>
+
+            <div class="cat" style="display: none">
+
+                <h2>example1.py: Line 17</h2>
+                
+                <div style="font-family: courier;">
+                translateLabelToCategories(labeledData, ["Comedy", "Horror"], activeclean)
+                <br/><br/>
+                </div>
+
+                <h2>Output: List[(String, Float)]</h2>
+
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                {% for o in cat %}
+                    <tr><td width="80%">{{ o.0 |  safe}}</td><td width="20%">{{ o.1 |  safe}}</td></tr>
+                {% endfor %}
+                </table>
+            
+            </div>
+
+            <div class="addCol" style="display: none">
+                
+                <h2 style="font-family: courier;">example1.py: Line 27</h2>
+                
+                <div style="font-family: courier;">
+                extractNewColDelim(activeclean, index=5)
+                <br/><br/>
+                </div>
+
+                <h2>Output: List[((String,String), Float)]</h2>
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                {% for o in addCol %}
+                    <tr><td width="50%">{{ o.0.0 |  safe}}</td><td width="40%">{{ o.0.1 |  safe}}</td><td width="10%">{{ o.1 |  safe}}</td></tr>
+                {% endfor %}
+                </table>
+            
+            </div>
+
+            <div class="entity" style="display: none">
+                
+                <h2>example1.py: Line 31</h2>
+                
+                <!--<div style="font-family: courier;">
+                entityResolution(2, {'similiarity':'edit', 'thresh': 0.6}, activeclean)
+                <br/><br/>
+                </div>-->
+
+                <h2>Output: List[((String,String), Float)]</h2>
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                {% for o in entity %}
+                    <tr><td width="50%">{{ o.0.0 |  safe}}</td><td width="40%">{{ o.0.1 |  safe}}</td><td width="10%">{{ o.1 |  safe}}</td></tr>
+                {% endfor %}
+                </table>
+            
+            </div>
+
+                        <div class="extract" style="display: none">
+
+                <h2>example1.py: IPython</h2>
+                
+                <div>
+                extractNewCol(extractRegexAndCopy(regex='\((.*?)\)'), activeclean)
+                <br/><br/>
+                </div>
+
+                <h2>Output: List[([String, String], Float)]</h2>
+
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                {% for o in extract %}
+                    <tr><td width="70%">{{ o.0.0 |  safe}}</td><td width="30%">{{ o.1 |  safe}}</td></tr>
+                {% endfor %}
+                </table>
+            
+            </div>
+
+            <div class="inferred" style="display: none">
+
+                <h2>example1.py: Line 20</h2>
+                
+                <div>
+                getDataTypes(numericalLabels)
+                <br/><br/>
+                </div>
+                
+                <h2>Inferred Types: {{ inferred |  safe}}</h2>
+                
+            </div>
+
+            <div class="features" style="display: none;">
+                <h2>Features</h2>
+
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                    <th><td width="20%"># Features</td></td><td width="20%">Max</td></td><td width="20%">Min</td></td><td width="20%">Mean</td></th>
+                {% for o in features %}
+                    <tr><td width="20%">{{ o.0 |  safe}}</td><td width="20%">{{ o.1 |  safe}}</td></td><td width="20%">{{ o.2 |  safe}}</td></td><td width="20%">{{ o.3 |  safe}}</td></td><td width="20%">{{ o.4 |  safe}}</td></tr>
+                {% endfor %}
+                </table>
+    
+                
+            </div>
+
+                        <div class="ftransform" style="display: none;">
+                <h2>Feature Transformation</h2>
+
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                    <th><td width="20%"># Features</td></td><td width="20%">Max</td></td><td width="20%">Min</td></td><td width="20%">Mean</td></th>
+                {% for o in ftransform %}
+                    <tr><td width="20%">{{ o.0 |  safe}}</td><td width="20%">{{ o.1 |  safe}}</td></td><td width="20%">{{ o.2 |  safe}}</td></td><td width="20%">{{ o.3 |  safe}}</td></td><td width="20%">{{ o.4 |  safe}}</td></tr>
+                {% endfor %}
+                </table>
+    
+                
+            </div>
+
+            <div class="classifier" style="display: none">
+
+                <h2>Learner.py: Line 17</h2>
+                
+                <div>
+                sklearn.SGDClassifier
+                <br/><br/>
+                </div>
+                
+                <!--<h3>Classification Model: {{ classifier.model |  safe}}</h3>-->
+                <h3>Classification Params: {{ classifier.params |  safe}}</h3>
+                
+            </div>
+
+            <div class="accuracy" style="display: none">
+
+                <h2>Accuracy Report</h2>
+
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                    <th><td width="80%">Test Error</td></th>
+                {% for o in saccuracy %}
+                    <tr><td width="20%"># {{ o.0 |  safe}}</td><td width="80%">{{ o.1 |  safe}}</td></tr>
+                {% endfor %}
+            </table>
+                
+            </div>
+
+            <div class="clean" style="display: none">
+                
+                <h2>Clean</h2>
+                <table class="pure-table pure-table-striped" style="word-break: break-all;">
+                {% for o in suggestions %}
+                    <tr><td><textarea style="width: 600px !important; height: 200px !important;">{{ o.0.0 |  safe}}</textarea> 
+
+
+                        <select style="position:relative; top: -100px; font-size: 18px !important;">
+  <option value="1">Comedy</option>
+  <option value="0">Horror</option>
+  <option value="-1">Remove</option>
+</select>
+
+</td></tr>
+                {% endfor %}
+                </table>
+            
+            </div>
+
+
+
+        </div>
+
+
+
+    </div>
+</div>
+
+<script src="{% static "js/dashboard.js" %}"></script>
+
+{% endblock %}
+
