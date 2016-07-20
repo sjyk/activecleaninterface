@@ -81,18 +81,18 @@ window.anim_started = false;
             <button class="pure-button pure-button-primary button-error" style="background-color:  #9966ff!important;" onclick="window.anim_started = true;">&#9654;&nbsp;Run</button>
 
                 <ul>
-                    <li><span style="background-color: steelblue;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;Combining dirty and clean data (<a href="#" onclick="$('.ri').fadeIn();">see</a>)  
+                    <li><span style="background-color: steelblue;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;Combining dirty and clean data (<a href="#" onclick="$('.ri').toggle();">see</a>)  
 
                     <br/>
                     <img class="ri" src="http://automation.berkeley.edu/activecleandemo/static/rtr.png"  width="250px" style="display: none;"/>
                     </li>
-                    <li><span style="background-color: black;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;Using only the clean data (<a href="#" onclick="$('.sci').fadeIn();">see</a>)
+                    <li><span style="background-color: black;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;Using only the clean data (<a href="#" onclick="$('.sci').toggle();">see</a>)
 
                     <br/>
                     <img class="sci" src="http://automation.berkeley.edu/activecleandemo/static/sc.png"  width="240px" style="display: none;"/>
 
                     </li>
-                    <li><span style="background-color: magenta;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;ActiveClean: Iterative Update (<a href="#" onclick="$('.aci').fadeIn();">see</a>)
+                    <li><span style="background-color: magenta;">&nbsp;&nbsp;&nbsp;&nbsp;</span>&nbsp;ActiveClean: Iterative Update (<a href="#" onclick="$('.aci').toggle();">see</a>)
 
                     <br/>
                     <img class="aci" src="http://automation.berkeley.edu/activecleandemo/static/ac.png" width="300px" style="display: none;"/>
@@ -115,6 +115,16 @@ window.anim_started = false;
     <div id="graph3" class="aGraph" style="width:600px; height:300px; position: relative; top: -600px;"></div>
     <span style="position: relative; top: -600px; left: -20px;">1000 &nbsp; &nbsp; &nbsp;  2000 &nbsp; &nbsp; &nbsp; 3000 &nbsp; &nbsp; &nbsp; 4000 &nbsp; &nbsp; &nbsp; 5000 &nbsp; &nbsp; &nbsp; 6000 &nbsp; &nbsp; &nbsp;  7000 &nbsp; &nbsp; &nbsp; 8000 &nbsp; &nbsp; &nbsp; 9000 &nbsp; &nbsp; &nbsp; 10000</span>
     <center><span style="position: relative; top: -600px; left: -30px;">Records Cleaned</span></center>
+    <p>
+    <div id="wins" style="position:relative; top: -590px; ">
+      <div style="color: steelblue">
+        <span style="background-color: steelblue;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        Improvement over combining: <span id="wins-s"></span></div>
+      <div style="color: black">
+        <span style="background-color: black;">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        Improvement over only clean data: <span id="wins-r"></span></div>
+    </div>
+    </p>
 
     </p>
     
@@ -125,9 +135,18 @@ window.anim_started = false;
         var graph = d3.select(id).append("svg:svg").attr("width", "100%").attr("height", "100%");
 
         // create a simple data array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
-	var datar = {{res_r| safe}};
-	var dataac = {{res_ac | safe}};
-	var datas = {{res_sc | safe}};
+	var datar = window.datar = {{res_r| safe}};
+	var dataac = window.dataac = {{res_ac | safe}};
+	var datas = window.datas = {{res_sc | safe}};
+  var improvementr = _.chain(datar)
+    .zip(dataac)
+    .map(function(pair) { return pair[1] - pair[0]})
+    .value();
+  var improvements = _.chain(datas)
+    .zip(dataac)
+    .map(function(pair) { return pair[1] - pair[0]})
+    .value();
+
 
         var data = [];
 
@@ -189,23 +208,32 @@ window.anim_started = false;
             setInterval(function() {
                
                if(window.anim_started){
-               d = datar
-               if (plotToChose == 'ac')
-                 d = dataac;
+                d = datar
+                if (plotToChose == 'ac') 
+                  d = dataac;
                 else if (plotToChose == 's')
-                    d = datas;
+                  d = datas;
 
-               if (d.length > 0){
-               var v = d.shift(); // remove the first element of the array
-               data.push(v);
-               console.log(data) // add a new element to the array (we're just taking the number we just shifted off the front and appending to the end)
-               if(animate) {
-                   redrawWithAnimation();
-               } else {
-                   redrawWithoutAnimation();
+                if (d.length > 0 && plotToChose == 'ac') {
+                  var imps = improvements.shift();
+                      impr = improvementr.shift();
+
+                    $("#wins-s").text(imps.toFixed(2));
+                    $("#wins-r").text(impr.toFixed(2));
+                    console.log([imps, impr])
+
+                }
+                if (d.length > 0){
+                  var v = d.shift(); // remove the first element of the array
+                  data.push(v);
+                  //console.log(data) // add a new element to the array (we're just taking the number we just shifted off the front and appending to the end)
+                  if(animate) {
+                      redrawWithAnimation();
+                  } else {
+                      redrawWithoutAnimation();
+                  }
                }
-            }
-           }
+             }
             }, updateDelay);
         }
         

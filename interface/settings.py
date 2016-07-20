@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = '/var/www/html/activecleandemo/interface/' #os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = '/Users/ewu/research/sampleclean/interface' #os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = BASE_DIR + '/static/'
 
 
@@ -53,12 +53,12 @@ MIDDLEWARE_CLASSES = [
 ]
 
 ROOT_URLCONF = 'interface.urls'
-TEMPLATE_DIRS = ['/var/www/html/activecleandemo/interface/templates']
+TEMPLATE_DIRS = ['%s/templates' % BASE_DIR]
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['/var/www/html/activecleandemo/interface/templates'],
+        'DIRS': ['%s/templates' % BASE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

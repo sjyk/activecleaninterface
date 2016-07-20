@@ -8,6 +8,10 @@ from chardet.universaldetector import UniversalDetector
 import pickle
 from random import shuffle
 import subprocess
+import os
+
+def open_file(suffix, *args, **kwargs):
+	return open(os.path.join(os.path.abspath("."), suffix), *args, **kwargs)
 
 """
 This loads the home page
@@ -17,8 +21,9 @@ def home(request):
 
 	m = request.GET.get("cleaning")
 
-	diagf=open("/var/www/html/activecleandemo/activeclean/diag/naive.p", 'rb')
-	
+
+	diagf=open_file("./diag/naive.p", 'rb')
+
 	context_dict = {}
 	while 1:
 		try:
@@ -31,8 +36,8 @@ def home(request):
 
 	diagf.close()
 
-	diagf=open("/var/www/html/activecleandemo/activeclean/diag/sc.p", 'rb')
-	
+	diagf=open_file("./diag/sc.p", 'rb')
+
 	while 1:
 		try:
 			v = pickle.load(diagf)
@@ -44,7 +49,7 @@ def home(request):
 
 	diagf.close()
 
-	a = pickle.load(open("/var/www/html/activecleandemo/activeclean/diag/converge.p",'rb'))
+	a = pickle.load(open_file("./diag/converge.p",'rb'))
 	for k in a:
 		context_dict['res_'+k] = json.dumps(a[k])
 
@@ -56,8 +61,8 @@ def analyze(request):
 
 	m = request.GET.get("cleaning","naive")
 
-	diagf=open("/var/www/html/activecleandemo/activeclean/diag/"+m+".p", 'rb')
-	
+	diagf=open_file("./diag/"+m+".p", 'rb')
+
 	context_dict = {}
 	while 1:
 		try:
@@ -106,8 +111,8 @@ def analyzeCustom(request):
 
 	m = request.GET.get("cleaning")
 
-	diagf=open("/var/www/html/activecleandemo/activeclean/diag/diag.p", 'rb')
-	
+	diagf=open_file("./diag/diag.p", 'rb')
+
 	context_dict = {}
 	while 1:
 		try:
@@ -126,7 +131,7 @@ def analyzeCustom(request):
 		keys = [ ("lineLoader", "load"), ("extractLabel", "label"), ("translateLabel...", "cat"), ("extractNewCol...", "addCol"), ("getDataTypes", "inferred"), ("convertToFea...", "features"), ("model", "classifier")]
 	else:
 		keys = [ ("lineLoader", "load"), ("extractLabel", "label"), ("translateLabel...", "cat"), ("extractNewCol...", "addCol"), ("entityResolution", "entity"), ("getDataTypes", "inferred"), ("convertToFea...", "features"), ("model", "classifier")]
-	
+
 	"""
 	elif len(context_dict.keys()) <= 11:
 		keys = [ ("lineLoader", "load"), ("extractLabel", "label"), ("translateLabel...", "cat"), ("extractNewCol", "extract"), ("extractNewCol...", "addCol"), ("getDataTypes", "inferred"), ("convertToFea...", "features"), ("transform", "ftransform"), ("model", "classifier")]
@@ -182,10 +187,10 @@ def clean(request):
 	m = request.GET.get("custom")
 
 	if m == "cus":
-		diagf=open("/var/www/html/activecleandemo/activeclean/diag/diag.p", 'rb')
+		diagf=open_file("./diag/diag.p", 'rb')
 	else:
-		diagf=open("/var/www/html/activecleandemo/activeclean/diag/naive.p", 'rb')
-	
+		diagf=open_file("./diag/naive.p", 'rb')
+
 	context_dict = {}
 	while 1:
 		try:
@@ -216,9 +221,9 @@ def sanitize(line):
 	return unicodedata.normalize('NFKD', unicode(line.strip(),errors='replace')).encode('ascii','ignore').encode('string_escape')
 
 """
-This loads a sample of data from the file, 
+This loads a sample of data from the file,
 
-!!fix header 
+!!fix header
 """
 def load(request):
 	filename = request.GET.get('name','')
@@ -267,5 +272,3 @@ def typeInference(table):
 	for h in etl.header(table):
 		col =  etl.cut(table, h)
 		print etl.nrows(col)
-
-
